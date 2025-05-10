@@ -8,6 +8,9 @@ function page() {
   const socket = useRef<WebSocketClient | null>(null)
   const [status, setstatus] = useState<string>("")
 
+  const [btnstatus, setbtnstatus] = useState<string>("")
+  const [btnstatus2, setbtnstatus2] = useState<string>("")
+
   const [datafromserver, setdatafromserver] = useState<Array<string>>([])
 
 
@@ -22,17 +25,27 @@ function page() {
       switch (res.data_type) {
         case 'nmap':
           setdatafromserver(prev => [...prev, res.data.message!])
+          
+          if(res.data.status){
+            setbtnstatus(res.data.status)
+
+          }
           break;
 
         case 'ping':
           setdatafromserver2(prev => [...prev, res.data.message!])
+          if(res.data.status){
+            setbtnstatus2(res.data.status)
+
+          }
+
           break;
 
         default:
           break;
       }
 
-      console.log(res)
+      // console.log(res)
     })
 
 
@@ -45,6 +58,7 @@ function page() {
 
   function starttask() {
     socket.current?.sendtoserver("nmap-start", "")
+    setdatafromserver([])
   }
 
   function stoptask() {
@@ -69,13 +83,22 @@ function page() {
       <div
         className='flex flex-row gap-4'
       >
-        <button onClick={starttask} className='bg-amber-200 hover:bg-amber-300 text-black w-50 h-20 p-5'>
-          start task1
-        </button>
+          {
+          btnstatus === "completed" || btnstatus === "cancelled" ? (
+            <button onClick={starttask} className='bg-amber-200 hover:bg-amber-300 text-black w-50 h-20 p-5'>
+              start task1
+            </button>
+          ) : btnstatus === "running" ? (
+            <button onClick={stoptask} className='bg-red-600 hover:bg-red-300 text-black w-50 h-20 p-5'>
+              stop task1
+            </button>
+          ) : (
+            <button onClick={starttask} className='bg-amber-200 hover:bg-amber-300 text-black w-50 h-20 p-5'>
+              start task1
+            </button>
+          )
+        }
 
-        <button onClick={stoptask} className='bg-red-600 hover:bg-red-300 text-black w-50 h-20 p-5'>
-          stop task1
-        </button>
       </div>
 
       <div className=' w-full max-w-2xl mx-auto'>
@@ -95,13 +118,21 @@ function page() {
       <div
         className='flex flex-row gap-4'
       >
-        <button onClick={starttask2} className='bg-amber-200 hover:bg-amber-300 text-black w-50 h-20 p-5'>
-          start task2
-        </button>
-
-        <button onClick={stoptask2} className='bg-red-600 hover:bg-red-300 text-black w-50 h-20 p-5'>
-          stop task2
-        </button>
+        {
+          btnstatus2 === "completed" || btnstatus2 === "cancelled" ? (
+            <button onClick={starttask2} className='bg-amber-200 hover:bg-amber-300 text-black w-50 h-20 p-5'>
+              start task2
+            </button>
+          ) : btnstatus2 === "running" ? (
+            <button onClick={stoptask2} className='bg-red-600 hover:bg-red-300 text-black w-50 h-20 p-5'>
+              stop task2
+            </button>
+          ) : (
+            <button onClick={starttask2} className='bg-amber-200 hover:bg-amber-300 text-black w-50 h-20 p-5'>
+              start task2
+            </button>
+          )
+        }
       </div>
 
       <div className=' w-full max-w-2xl mx-auto'>
